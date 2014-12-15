@@ -41,7 +41,7 @@
 #ifdef ENABLE_AV_ENHANCEMENTS
 #include "QCMediaDefs.h"
 #include "QCMetaData.h"
-#ifndef QCOM_DIRECTTRACK
+#if !defined(QCOM_DIRECTTRACK) && !defined(QCOM_LEGACY_OMX)
 #include "audio_defs.h"
 #endif
 #endif

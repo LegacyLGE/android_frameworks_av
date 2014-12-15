@@ -53,7 +53,11 @@ public:
             float *confidence, sp<AMessage> *meta);
 
     //if isExtendedExtractor = true, store the location of the sniffer to register
+#ifdef QCOM_LEGACY_MMPARSER
+    void registerSniffer_l(SnifferFunc func, bool isExtendedExtractor = false);
+#else
     void registerSniffer_l(SnifferFunc func);
+#endif
     void registerDefaultSniffers();
 
     virtual ~Sniffer() {}
@@ -122,6 +126,9 @@ public:
             const sp<DataSource> &source, String8 *mimeType,
             float *confidence, sp<AMessage> *meta);
 
+#ifdef QCOM_LEGACY_MMPARSER
+    static void RegisterSniffer_l(SnifferFunc func, bool isExtendedExtractor = false);
+#endif
     static void RegisterDefaultSniffers();
 
     // for DRM
@@ -140,8 +147,9 @@ protected:
     virtual ~DataSource() {}
 
     sp<Sniffer> mSniffer;
-
+#ifndef QCOM_LEGACY_MMPARSER
     static void RegisterSniffer_l(SnifferFunc func);
+#endif
     static void RegisterSnifferPlugin();
 
     DataSource(const DataSource &);

@@ -76,7 +76,12 @@
 #include "QCMetaData.h"
 #endif
 
+#ifdef QCOM_LEGACY_OMX
+#define USE_SURFACE_ALLOC 0
+#else
 #define USE_SURFACE_ALLOC 1
+#endif
+
 #define FRAME_DROP_FREQ 0
 #define LPA_MIN_DURATION_USEC_ALLOWED 30000000
 #define LPA_MIN_DURATION_USEC_DEFAULT 60000000

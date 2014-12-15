@@ -78,7 +78,7 @@ static const uint8_t kHEVCNalUnitTypeVidParamSet = 0x20;
 static const uint8_t kHEVCNalUnitTypeSeqParamSet = 0x21;
 static const uint8_t kHEVCNalUnitTypePicParamSet = 0x22;
 
-#ifdef ENABLE_AV_ENHANCEMENTS
+#if defined(ENABLE_AV_ENHANCEMENTS) || defined(QCOM_LEGACY_MMPARSER)
 
 #include <QCMetaData.h>
 #include <QCMediaDefs.h>

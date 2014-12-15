@@ -127,6 +127,7 @@ status_t DataSource::getSize(off64_t *size) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+
 bool DataSource::sniff(
         String8 *mimeType, float *confidence, sp<AMessage> *meta) {
 
@@ -134,7 +135,11 @@ bool DataSource::sniff(
 }
 
 // static
+#ifdef QCOM_LEGACY_MMPARSER
+void DataSource::RegisterSniffer_l(SnifferFunc func, bool isExtendedExtractor) {
+#else
 void DataSource::RegisterSniffer_l(SnifferFunc func) {
+#endif
     return;
 }
 
@@ -166,6 +171,11 @@ bool Sniffer::sniff(
     Mutex::Autolock autoLock(mSnifferMutex);
     for (List<SnifferFunc>::iterator it = mSniffers.begin();
          it != mSniffers.end(); ++it) {
+#ifdef QCOM_LEGACY_MMPARSER
+        // Don't try to use ExtendedExtractor if already found a suitable from the defaults
+        if(it == extendedSnifferPosition && *confidence > 0.0)
+            return true;
+#endif
         String8 newMimeType;
         float newConfidence;
         sp<AMessage> newMeta;
@@ -198,7 +208,11 @@ bool Sniffer::sniff(
     return *confidence > 0.0;
 }
 
+#ifdef QCOM_LEGACY_MMPARSER
+void Sniffer::registerSniffer_l(SnifferFunc func, bool isExtendedExtractor) {
+#else
 void Sniffer::registerSniffer_l(SnifferFunc func) {
+#endif
 
     for (List<SnifferFunc>::iterator it = mSniffers.begin();
          it != mSniffers.end(); ++it) {
@@ -208,6 +222,14 @@ void Sniffer::registerSniffer_l(SnifferFunc func) {
     }
 
     mSniffers.push_back(func);
+
+#ifdef QCOM_LEGACY_MMPARSER
+    if (isExtendedExtractor) {
+        extendedSnifferPosition = mSniffers.end();
+        extendedSnifferPosition--;
+    }
+#endif
+
 }
 
 void Sniffer::registerSnifferPlugin() {
@@ -243,9 +265,13 @@ void Sniffer::registerDefaultSniffers() {
     registerSniffer_l(SniffMP3);
     registerSniffer_l(SniffAAC);
     registerSniffer_l(SniffMPEG2PS);
+#ifdef QCOM_LEGACY_MMPARSER
+    ExtendedExtractor::RegisterSniffers();
+#else
     registerSniffer_l(SniffWVM);
 #ifdef QCOM_HARDWARE
     registerSniffer_l(ExtendedExtractor::Sniff);
+#endif
 #endif
     registerSnifferPlugin();
 
